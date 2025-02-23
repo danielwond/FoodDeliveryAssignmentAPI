@@ -1,0 +1,11 @@
+/Users/danny/RiderProjects/FoodDelivery/FoodDelivery.Shared/bin/Debug/net9.0/FoodDelivery.Shared.deps.json
+/Users/danny/RiderProjects/FoodDelivery/FoodDelivery.Shared/bin/Debug/net9.0/FoodDelivery.Shared.dll
+/Users/danny/RiderProjects/FoodDelivery/FoodDelivery.Shared/bin/Debug/net9.0/FoodDelivery.Shared.pdb
+/Users/danny/RiderProjects/FoodDelivery/FoodDelivery.Shared/obj/Debug/net9.0/FoodDelivery.Shared.GeneratedMSBuildEditorConfig.editorconfig
+/Users/danny/RiderProjects/FoodDelivery/FoodDelivery.Shared/obj/Debug/net9.0/FoodDelivery.Shared.AssemblyInfoInputs.cache
+/Users/danny/RiderProjects/FoodDelivery/FoodDelivery.Shared/obj/Debug/net9.0/FoodDelivery.Shared.AssemblyInfo.cs
+/Users/danny/RiderProjects/FoodDelivery/FoodDelivery.Shared/obj/Debug/net9.0/FoodDelivery.Shared.csproj.CoreCompileInputs.cache
+/Users/danny/RiderProjects/FoodDelivery/FoodDelivery.Shared/obj/Debug/net9.0/FoodDelivery.Shared.dll
+/Users/danny/RiderProjects/FoodDelivery/FoodDelivery.Shared/obj/Debug/net9.0/refint/FoodDelivery.Shared.dll
+/Users/danny/RiderProjects/FoodDelivery/FoodDelivery.Shared/obj/Debug/net9.0/FoodDelivery.Shared.pdb
+/Users/danny/RiderProjects/FoodDelivery/FoodDelivery.Shared/obj/Debug/net9.0/ref/FoodDelivery.Shared.dll

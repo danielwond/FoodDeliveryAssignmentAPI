@@ -1,0 +1,17 @@
+/Users/danny/RiderProjects/FoodDelivery/FoodDelivery.Services/bin/Debug/net9.0/FoodDelivery.Services.deps.json
+/Users/danny/RiderProjects/FoodDelivery/FoodDelivery.Services/bin/Debug/net9.0/FoodDelivery.Services.dll
+/Users/danny/RiderProjects/FoodDelivery/FoodDelivery.Services/bin/Debug/net9.0/FoodDelivery.Services.pdb
+/Users/danny/RiderProjects/FoodDelivery/FoodDelivery.Services/bin/Debug/net9.0/FoodDelivery.DataAccess.dll
+/Users/danny/RiderProjects/FoodDelivery/FoodDelivery.Services/bin/Debug/net9.0/FoodDelivery.Shared.dll
+/Users/danny/RiderProjects/FoodDelivery/FoodDelivery.Services/bin/Debug/net9.0/FoodDelivery.DataAccess.pdb
+/Users/danny/RiderProjects/FoodDelivery/FoodDelivery.Services/bin/Debug/net9.0/FoodDelivery.Shared.pdb
+/Users/danny/RiderProjects/FoodDelivery/FoodDelivery.Services/obj/Debug/net9.0/FoodDelivery.Services.csproj.AssemblyReference.cache
+/Users/danny/RiderProjects/FoodDelivery/FoodDelivery.Services/obj/Debug/net9.0/FoodDelivery.Services.GeneratedMSBuildEditorConfig.editorconfig
+/Users/danny/RiderProjects/FoodDelivery/FoodDelivery.Services/obj/Debug/net9.0/FoodDelivery.Services.AssemblyInfoInputs.cache
+/Users/danny/RiderProjects/FoodDelivery/FoodDelivery.Services/obj/Debug/net9.0/FoodDelivery.Services.AssemblyInfo.cs
+/Users/danny/RiderProjects/FoodDelivery/FoodDelivery.Services/obj/Debug/net9.0/FoodDelivery.Services.csproj.CoreCompileInputs.cache
+/Users/danny/RiderProjects/FoodDelivery/FoodDelivery.Services/obj/Debug/net9.0/FoodDeli.8645DD76.Up2Date
+/Users/danny/RiderProjects/FoodDelivery/FoodDelivery.Services/obj/Debug/net9.0/FoodDelivery.Services.dll
+/Users/danny/RiderProjects/FoodDelivery/FoodDelivery.Services/obj/Debug/net9.0/refint/FoodDelivery.Services.dll
+/Users/danny/RiderProjects/FoodDelivery/FoodDelivery.Services/obj/Debug/net9.0/FoodDelivery.Services.pdb
+/Users/danny/RiderProjects/FoodDelivery/FoodDelivery.Services/obj/Debug/net9.0/ref/FoodDelivery.Services.dll

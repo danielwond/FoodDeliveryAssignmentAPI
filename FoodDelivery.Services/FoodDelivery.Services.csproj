@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\FoodDelivery.DataAccess\FoodDelivery.DataAccess.csproj" />
+      <ProjectReference Include="..\FoodDelivery.Shared\FoodDelivery.Shared.csproj" />
+    </ItemGroup>
+
+</Project>

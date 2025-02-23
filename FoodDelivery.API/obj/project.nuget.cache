@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "bXZ0yI/edBw=",
+  "success": true,
+  "projectFilePath": "/Users/danny/RiderProjects/FoodDelivery/FoodDelivery.API/FoodDelivery.API.csproj",
+  "expectedPackageFiles": [
+    "/Users/danny/.nuget/packages/microsoft.aspnetcore.openapi/9.0.0/microsoft.aspnetcore.openapi.9.0.0.nupkg.sha512",
+    "/Users/danny/.nuget/packages/microsoft.openapi/1.6.17/microsoft.openapi.1.6.17.nupkg.sha512"
+  ],
+  "logs": []
+}
