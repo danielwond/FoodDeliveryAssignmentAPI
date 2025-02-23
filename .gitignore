@@ -1,0 +1,9 @@
+/FoodDelivery.API/bin
+/FoodDelivery.DataAccess/bin
+/FoodDelivery.Services/bin
+/FoodDelivery.Shared/bin
+
+/FoodDelivery.API/obj
+/FoodDelivery.DataAccess/obj
+/FoodDelivery.Services/obj
+/FoodDelivery.Shared/obj
