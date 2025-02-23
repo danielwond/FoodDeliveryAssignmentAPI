@@ -1,10 +1,10 @@
 using FoodDelivery.Services.Configurations;
-using Microsoft.AspNetCore.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.ConfigureDbInjections(builder.Configuration);
+builder.Services.ConfigureServicesInjection();
 
 builder.Services.AddControllers();
 
@@ -19,7 +19,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    
+
     //Added swagger support
     app.UsePathBase("/swagger/index.html");
 }

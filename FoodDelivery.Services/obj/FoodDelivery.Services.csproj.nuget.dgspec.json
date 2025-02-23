@@ -4,14 +4,14 @@
     "/Users/danny/RiderProjects/FoodDelivery/FoodDelivery.Services/FoodDelivery.Services.csproj": {}
   },
   "projects": {
-    "/Users/danny/RiderProjects/FoodDelivery/FoodDelivery.DataAccess/FoodDelivery.DataAccess.csproj": {
+    "/Users/danny/RiderProjects/FoodDelivery/FoodDelivery.Services/FoodDelivery.Services.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/danny/RiderProjects/FoodDelivery/FoodDelivery.DataAccess/FoodDelivery.DataAccess.csproj",
-        "projectName": "FoodDelivery.DataAccess",
-        "projectPath": "/Users/danny/RiderProjects/FoodDelivery/FoodDelivery.DataAccess/FoodDelivery.DataAccess.csproj",
+        "projectUniqueName": "/Users/danny/RiderProjects/FoodDelivery/FoodDelivery.Services/FoodDelivery.Services.csproj",
+        "projectName": "FoodDelivery.Services",
+        "projectPath": "/Users/danny/RiderProjects/FoodDelivery/FoodDelivery.Services/FoodDelivery.Services.csproj",
         "packagesPath": "/Users/danny/.nuget/packages/",
-        "outputPath": "/Users/danny/RiderProjects/FoodDelivery/FoodDelivery.DataAccess/obj/",
+        "outputPath": "/Users/danny/RiderProjects/FoodDelivery/FoodDelivery.Services/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/danny/.nuget/NuGet/NuGet.Config"
@@ -48,85 +48,19 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "Microsoft.AspNetCore.Http": {
+              "target": "Package",
+              "version": "[2.3.0, )"
+            },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
-              "version": "[9.0.2, )"
+              "version": "[8.0.13, )"
             },
             "Pomelo.EntityFrameworkCore.MySql": {
               "target": "Package",
               "version": "[8.0.2, )"
-            },
-            "System.Diagnostics.Tools": {
-              "target": "Package",
-              "version": "[4.3.0, )"
             }
           },
-          "imports": [
-            "net461",
-            "net462",
-            "net47",
-            "net471",
-            "net472",
-            "net48",
-            "net481"
-          ],
-          "assetTargetFallback": true,
-          "warn": true,
-          "frameworkReferences": {
-            "Microsoft.NETCore.App": {
-              "privateAssets": "all"
-            }
-          },
-          "runtimeIdentifierGraphPath": "/Users/danny/.dotnet/sdk/9.0.200/PortableRuntimeIdentifierGraph.json"
-        }
-      }
-    },
-    "/Users/danny/RiderProjects/FoodDelivery/FoodDelivery.Services/FoodDelivery.Services.csproj": {
-      "version": "1.0.0",
-      "restore": {
-        "projectUniqueName": "/Users/danny/RiderProjects/FoodDelivery/FoodDelivery.Services/FoodDelivery.Services.csproj",
-        "projectName": "FoodDelivery.Services",
-        "projectPath": "/Users/danny/RiderProjects/FoodDelivery/FoodDelivery.Services/FoodDelivery.Services.csproj",
-        "packagesPath": "/Users/danny/.nuget/packages/",
-        "outputPath": "/Users/danny/RiderProjects/FoodDelivery/FoodDelivery.Services/obj/",
-        "projectStyle": "PackageReference",
-        "configFilePaths": [
-          "/Users/danny/.nuget/NuGet/NuGet.Config"
-        ],
-        "originalTargetFrameworks": [
-          "net8.0"
-        ],
-        "sources": {
-          "https://api.nuget.org/v3/index.json": {}
-        },
-        "frameworks": {
-          "net8.0": {
-            "targetAlias": "net8.0",
-            "projectReferences": {
-              "/Users/danny/RiderProjects/FoodDelivery/FoodDelivery.DataAccess/FoodDelivery.DataAccess.csproj": {
-                "projectPath": "/Users/danny/RiderProjects/FoodDelivery/FoodDelivery.DataAccess/FoodDelivery.DataAccess.csproj"
-              },
-              "/Users/danny/RiderProjects/FoodDelivery/FoodDelivery.Shared/FoodDelivery.Shared.csproj": {
-                "projectPath": "/Users/danny/RiderProjects/FoodDelivery/FoodDelivery.Shared/FoodDelivery.Shared.csproj"
-              }
-            }
-          }
-        },
-        "warningProperties": {
-          "warnAsError": [
-            "NU1605"
-          ]
-        },
-        "restoreAuditProperties": {
-          "enableAudit": "true",
-          "auditLevel": "low",
-          "auditMode": "direct"
-        },
-        "SdkAnalysisLevel": "9.0.200"
-      },
-      "frameworks": {
-        "net8.0": {
-          "targetAlias": "net8.0",
           "imports": [
             "net461",
             "net462",
@@ -186,6 +120,12 @@
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.AspNetCore.Http": {
+              "target": "Package",
+              "version": "[2.3.0, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",

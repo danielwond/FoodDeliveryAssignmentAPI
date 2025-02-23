@@ -1,6 +1,6 @@
 using FoodDelivery.Shared.Enums;
 
-namespace FoodDelivery.DataAccess.Entities;
+namespace FoodDelivery.Services.Data.Entities;
 
 public class OrderEntity
 {
@@ -9,7 +9,7 @@ public class OrderEntity
     public Guid? DeliveryPersonId { get; set; }
     public OrderStatusEnumId Status { get; set; }
     public decimal TotalPrice { get; set; }
-    
+
     public UserEntity Customer { get; set; }
     public UserEntity? DeliveryPerson { get; set; }
     public ICollection<OrderItemEntity> OrderItems { get; set; }

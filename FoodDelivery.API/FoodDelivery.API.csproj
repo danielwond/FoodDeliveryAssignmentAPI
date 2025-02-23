@@ -7,18 +7,18 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.13" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.2">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.13"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.13">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="7.2.0" />
-        <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="7.2.0" />
+        <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="7.2.0"/>
+        <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="7.2.0"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\FoodDelivery.Services\FoodDelivery.Services.csproj" />
-      <ProjectReference Include="..\FoodDelivery.Shared\FoodDelivery.Shared.csproj" />
+        <ProjectReference Include="..\FoodDelivery.Services\FoodDelivery.Services.csproj"/>
+        <ProjectReference Include="..\FoodDelivery.Shared\FoodDelivery.Shared.csproj"/>
     </ItemGroup>
 
 </Project>

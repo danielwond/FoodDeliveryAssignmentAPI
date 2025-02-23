@@ -1,4 +1,4 @@
-namespace FoodDelivery.DataAccess.Entities;
+namespace FoodDelivery.Services.Data.Entities;
 
 public class BaseEntity
 {

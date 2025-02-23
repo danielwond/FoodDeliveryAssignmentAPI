@@ -1,5 +1,4 @@
-namespace FoodDelivery.DataAccess.Entities;
-
+namespace FoodDelivery.Services.Data.Entities;
 
 public class PaymentEntity
 {
@@ -9,7 +8,6 @@ public class PaymentEntity
     public decimal Amount { get; set; }
     public DateTime PaymentTime { get; set; }
     public bool IsSuccessful { get; set; }
-    
-    public OrderEntity Order { get; set; }
-    }
 
+    public OrderEntity Order { get; set; }
+}
