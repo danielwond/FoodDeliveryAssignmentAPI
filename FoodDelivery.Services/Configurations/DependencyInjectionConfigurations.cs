@@ -1,8 +1,14 @@
+using System.Text;
 using FoodDelivery.Services.Data;
+using FoodDelivery.Services.Services.MenuService;
 using FoodDelivery.Services.Services.UserService;
+using FoodDelivery.Shared.Enums;
+using FoodDelivery.Shared.Options;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 
 namespace FoodDelivery.Services.Configurations;
 
@@ -16,8 +22,36 @@ public static class DependencyInjectionConfigurations
                 .UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
     }
 
+    public static void ConfigureOptionInjections(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.Configure<JWTOptions>(configuration.GetSection("JWTOptions"));
+    }
     public static void ConfigureServicesInjection(this IServiceCollection services)
     {
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IMenuService, MenuService>();
+    }
+
+    public static void ConfigureAuthInjection(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = configuration["JWTOptions:ValidIssuer"],
+                    ValidAudience = configuration["JWTOptions:ValidAudience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWTOptions:Secret"]))
+                };
+            });
+        var ss = UserRoleEnum.Admin.ToString();
+        Console.WriteLine(ss);
+        services.AddAuthorizationBuilder()
+            .AddPolicy("AdminPolicy", policy => policy.RequireRole(UserRoleEnum.Admin.ToString()))
+            .AddPolicy("UserPolicy", policy => policy.RequireRole(UserRoleEnum.User.ToString()));
     }
 }

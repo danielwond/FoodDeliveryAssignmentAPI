@@ -8,7 +8,7 @@ public static class FileHelpers
     public static async Task<string> UploadImage(IFormFile file, FileTypeEnum fileType )
     {
         var fileExtension = Path.GetExtension(file.FileName);
-        var fileName = Guid.NewGuid() + $".{fileExtension}";
+        var fileName = Guid.NewGuid() + fileExtension;
         var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "Files", fileType.ToString());
         var filePath = Path.Combine(folderPath, fileName);
 
@@ -20,5 +20,10 @@ public static class FileHelpers
         await file.CopyToAsync(stream);
 
         return filePath;
+    }
+
+    public static void DeleteImage(string file)
+    {
+        File.Delete(file);
     }
 }

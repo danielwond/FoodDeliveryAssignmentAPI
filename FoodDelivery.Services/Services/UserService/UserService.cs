@@ -1,16 +1,19 @@
+using System.Security.Claims;
 using FoodDelivery.Services.Data;
 using FoodDelivery.Services.Data.Entities;
 using FoodDelivery.Shared;
 using FoodDelivery.Shared.Enums;
 using FoodDelivery.Shared.Helpers;
 using FoodDelivery.Shared.Models.DTOs.User;
-using Microsoft.AspNetCore.Http;
+using FoodDelivery.Shared.Options;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace FoodDelivery.Services.Services.UserService;
 
-public class UserService(DataContext context) : IUserService
+public class UserService(DataContext context, IOptions<JWTOptions> options) : IUserService
 {
-    private readonly DataContext _context = context;
+    private readonly JWTOptions _options = options.Value;
 
     public async Task<ServiceResponse<string>> RegisterUser(UserRegisterDto user)
     {
@@ -30,8 +33,8 @@ public class UserService(DataContext context) : IUserService
             ProfilePicturePath = user.Photo == null ? "" : await FileHelpers.UploadImage(user.Photo, FileTypeEnum.ImgProfile),
         };
         
-        await _context.Users.AddAsync(newUser);
-        await _context.SaveChangesAsync();
+        await context.Users.AddAsync(newUser);
+        await context.SaveChangesAsync();
 
         return new ServiceResponse<string>()
         {
@@ -39,5 +42,36 @@ public class UserService(DataContext context) : IUserService
             Message = "User created successfully.",
             isSuccess = true
         };
+    }
+
+    public async Task<ServiceResponse<string>> Login(UserLoginDto user)
+    {
+        var loggedInUser = await context.Users.Where(x => x.Email == user.Email).FirstOrDefaultAsync();
+        if (loggedInUser == null ||
+            !PasswordHelpers.VerifyPasswordHash(user.Password, loggedInUser.PasswordHash, loggedInUser.PasswordSalt))
+        {
+            return new ServiceResponse<string>()
+            {
+                Data = "",
+                Message = "Invalid credentials."
+            };
+        }
+        else
+        {
+            var role = loggedInUser.UserRole;
+            var claims = new List<Claim>()
+            {
+                new(ClaimTypes.Sid, loggedInUser.ID.ToString()),
+                new(ClaimTypes.Name, loggedInUser.FullName),
+                new(ClaimTypes.Role, role.ToString()),
+            };
+            var token = TokenHelpers.GenerateToken(claims, _options);
+            return new ServiceResponse<string>()
+            {
+                Data = token,
+                Message = "User Authenticated.",
+                isSuccess = true
+            };
+        }
     }
 }

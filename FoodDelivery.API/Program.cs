@@ -5,6 +5,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.ConfigureDbInjections(builder.Configuration);
 builder.Services.ConfigureServicesInjection();
+builder.Services.ConfigureOptionInjections(builder.Configuration);
+builder.Services.ConfigureAuthInjection(builder.Configuration);
 
 builder.Services.AddControllers();
 

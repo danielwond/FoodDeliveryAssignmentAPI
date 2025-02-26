@@ -8,13 +8,17 @@ namespace FoodDelivery.API.Controllers;
 [ApiController]
 public class UserAccountController(IUserService userService) : ControllerBase
 {
-    private readonly IUserService _userService = userService;
-    
-    [HttpPost]
+    [HttpPost("register")]
     public async Task<IActionResult> RegisterUser([FromForm] UserRegisterDto user)
     {
-        var result = await _userService.RegisterUser(user);
+        var result = await userService.RegisterUser(user);
         return result.isSuccess ? Ok(result) : StatusCode(StatusCodes.Status500InternalServerError, result);
     }
 
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromForm] UserLoginDto user)
+    {
+        var result = await userService.Login(user);
+        return result.isSuccess ? Ok(result) : StatusCode(StatusCodes.Status500InternalServerError, result);
+    }
 }

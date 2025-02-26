@@ -7,4 +7,5 @@ namespace FoodDelivery.Services.Services.UserService;
 public interface IUserService
 {
     public Task<ServiceResponse<string>> RegisterUser(UserRegisterDto user);
+    public Task<ServiceResponse<string>> Login(UserLoginDto user);
 }
