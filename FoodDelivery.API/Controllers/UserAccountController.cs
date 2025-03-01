@@ -21,4 +21,12 @@ public class UserAccountController(IUserService userService) : ControllerBase
         var result = await userService.Login(user);
         return result.isSuccess ? Ok(result) : StatusCode(StatusCodes.Status500InternalServerError, result);
     }
+
+    //To be removed after implementation
+    [HttpGet]
+    public async Task<IActionResult> GetAllUsers()
+    {
+        var result = await userService.GetAllUsers();
+        return Ok(result);  
+    }
 }

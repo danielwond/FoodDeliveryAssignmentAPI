@@ -4,7 +4,7 @@ public enum OrderStatusEnumId
 {
     Pending,
     Preparing,
-    Completed,
+    Delivering,
     Delivered,
     Cancelled
 }

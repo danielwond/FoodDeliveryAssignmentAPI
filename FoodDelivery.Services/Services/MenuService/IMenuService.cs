@@ -9,7 +9,7 @@ public interface IMenuService
 {
     public Task<ServiceResponse<IEnumerable<MenuItemEntity>>> GetMenus();
     public Task<ServiceResponse<MenuItemEntity>> GetMenu(Guid id);
-    public Task<ServiceResponse<MenuItemEntity>> AddMenu(MenuAddDto addDto);
+    public Task<ServiceResponse<MenuItemEntity>> AddMenu(CreateMenuDto dto);
 
     public Task<ServiceResponse<MenuItemEntity>> ChangeMenuStatus(Guid Id);
     public Task<ServiceResponse<Guid>> DeleteMenu(Guid Id);

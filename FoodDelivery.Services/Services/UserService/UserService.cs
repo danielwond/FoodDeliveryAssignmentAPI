@@ -38,7 +38,6 @@ public class UserService(DataContext context, IOptions<JWTOptions> options) : IU
 
         return new ServiceResponse<string>()
         {
-            Data = "",
             Message = "User created successfully.",
             isSuccess = true
         };
@@ -52,7 +51,6 @@ public class UserService(DataContext context, IOptions<JWTOptions> options) : IU
         {
             return new ServiceResponse<string>()
             {
-                Data = "",
                 Message = "Invalid credentials."
             };
         }
@@ -72,6 +70,20 @@ public class UserService(DataContext context, IOptions<JWTOptions> options) : IU
                 Message = "User Authenticated.",
                 isSuccess = true
             };
+        }
+    }
+
+    public async Task<List<UserEntity>> GetAllUsers()
+    {
+        try
+        {
+            var result = await context.Users.ToListAsync();
+            return result;  
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
         }
     }
 }

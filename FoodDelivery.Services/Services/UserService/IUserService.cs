@@ -1,3 +1,4 @@
+using FoodDelivery.Services.Data.Entities;
 using FoodDelivery.Shared;
 using FoodDelivery.Shared.Models.DTOs.User;
 using Microsoft.AspNetCore.Http;
@@ -8,4 +9,6 @@ public interface IUserService
 {
     public Task<ServiceResponse<string>> RegisterUser(UserRegisterDto user);
     public Task<ServiceResponse<string>> Login(UserLoginDto user);
+    
+    public Task<List<UserEntity>> GetAllUsers();
 }

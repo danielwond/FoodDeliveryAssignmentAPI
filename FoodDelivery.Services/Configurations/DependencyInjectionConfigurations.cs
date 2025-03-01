@@ -1,6 +1,8 @@
 using System.Text;
 using FoodDelivery.Services.Data;
 using FoodDelivery.Services.Services.MenuService;
+using FoodDelivery.Services.Services.OrderService;
+using FoodDelivery.Services.Services.SeedService;
 using FoodDelivery.Services.Services.UserService;
 using FoodDelivery.Shared.Enums;
 using FoodDelivery.Shared.Options;
@@ -30,6 +32,8 @@ public static class DependencyInjectionConfigurations
     {
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IMenuService, MenuService>();
+        services.AddScoped<IOrderService, OrderService>();
+        services.AddScoped<ISeedService, SeedService>();
     }
 
     public static void ConfigureAuthInjection(this IServiceCollection services, IConfiguration configuration)
@@ -48,10 +52,8 @@ public static class DependencyInjectionConfigurations
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWTOptions:Secret"]))
                 };
             });
-        var ss = UserRoleEnum.Admin.ToString();
-        Console.WriteLine(ss);
         services.AddAuthorizationBuilder()
             .AddPolicy("AdminPolicy", policy => policy.RequireRole(UserRoleEnum.Admin.ToString()))
-            .AddPolicy("UserPolicy", policy => policy.RequireRole(UserRoleEnum.User.ToString()));
+            .AddPolicy("UserPolicy", policy => policy.RequireRole(UserRoleEnum.Customer.ToString()));
     }
 }

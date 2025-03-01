@@ -41,11 +41,11 @@ public class MenuService(DataContext context) : IMenuService
         };
     }
 
-    public async Task<ServiceResponse<MenuItemEntity>> AddMenu(MenuAddDto addDto)
+    public async Task<ServiceResponse<MenuItemEntity>> AddMenu(CreateMenuDto dto)
     {
         try
         {
-            var result = await _context.Menus.Where(x => x.FoodName == addDto.FoodName).FirstOrDefaultAsync();
+            var result = await _context.Menus.Where(x => x.FoodName == dto.FoodName).FirstOrDefaultAsync();
             if (result != null)
             {
                 return new ServiceResponse<MenuItemEntity>()
@@ -54,9 +54,9 @@ public class MenuService(DataContext context) : IMenuService
                 };
             }
             var imgs = string.Empty;
-            if (addDto.Images.Count != 0)
+            if (dto.Images.Count != 0)
             {
-                foreach (var img in addDto.Images)
+                foreach (var img in dto.Images)
                 {
                     var path = await FileHelpers.UploadImage(img, FileTypeEnum.ImgMenu);
                     imgs += path + ",";
@@ -64,9 +64,9 @@ public class MenuService(DataContext context) : IMenuService
             }
             var newMenu = new MenuItemEntity()
             {
-                FoodName = addDto.FoodName,
-                Description = addDto.Description,
-                Price = addDto.Price,
+                FoodName = dto.FoodName,
+                Description = dto.Description,
+                Price = dto.Price,
                 ID = Guid.NewGuid(),
                 CreatedOn = DateTime.Now.ToUniversalTime(),
                 ModifiedOn = DateTime.Now.ToUniversalTime(),

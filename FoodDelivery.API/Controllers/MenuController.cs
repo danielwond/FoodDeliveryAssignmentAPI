@@ -21,13 +21,13 @@ public class MenuController(IMenuService menuService) : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> AddMenu([FromForm] MenuAddDto addDto)
+    public async Task<IActionResult> AddMenu([FromForm] CreateMenuDto dto)
     {
-        var result = await _menuService.AddMenu(addDto);
+        var result = await _menuService.AddMenu(dto);
         return result.isSuccess ? Ok(result) : StatusCode(StatusCodes.Status500InternalServerError, result);
     }
 
-    [HttpPut("{id:guid}/update/status")]
+    [HttpPatch("{id:guid}/update/status")]
     public async Task<IActionResult> ChangeMenuStatus(Guid id)
     {
         var result = await _menuService.ChangeMenuStatus(id);
