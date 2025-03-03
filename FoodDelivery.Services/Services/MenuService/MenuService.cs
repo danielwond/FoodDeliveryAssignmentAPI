@@ -10,11 +10,9 @@ namespace FoodDelivery.Services.Services.MenuService;
 
 public class MenuService(DataContext context) : IMenuService
 {
-    private readonly DataContext _context = context;
-
     public async Task<ServiceResponse<IEnumerable<MenuItemEntity>>> GetMenus()
     {
-        var result = await _context.Menus.AsNoTracking().ToListAsync();
+        var result = await context.Menus.AsNoTracking().ToListAsync();
         return new ServiceResponse<IEnumerable<MenuItemEntity>>()
         {
             Data = result,
@@ -25,7 +23,7 @@ public class MenuService(DataContext context) : IMenuService
 
     public async Task<ServiceResponse<MenuItemEntity>> GetMenu(Guid id)
     {
-        var result = await _context.Menus.AsNoTracking().Where(x => x.ID == id).FirstOrDefaultAsync();
+        var result = await context.Menus.AsNoTracking().Where(x => x.ID == id).FirstOrDefaultAsync();
         if (result == null)
         {
             return new ServiceResponse<MenuItemEntity>()
@@ -45,7 +43,7 @@ public class MenuService(DataContext context) : IMenuService
     {
         try
         {
-            var result = await _context.Menus.Where(x => x.FoodName == dto.FoodName).FirstOrDefaultAsync();
+            var result = await context.Menus.Where(x => x.FoodName == dto.FoodName).FirstOrDefaultAsync();
             if (result != null)
             {
                 return new ServiceResponse<MenuItemEntity>()
@@ -73,8 +71,8 @@ public class MenuService(DataContext context) : IMenuService
                 Status = true,
                 ImagesOfTheFood = imgs
             };
-            await _context.Menus.AddAsync(newMenu);
-            await _context.SaveChangesAsync();
+            await context.Menus.AddAsync(newMenu);
+            await context.SaveChangesAsync();
 
             return new ServiceResponse<MenuItemEntity>()
             {
@@ -94,7 +92,7 @@ public class MenuService(DataContext context) : IMenuService
     {
         try
         {
-            var result = await _context.Menus.Where(x => x.ID == Id).FirstOrDefaultAsync();
+            var result = await context.Menus.Where(x => x.ID == Id).FirstOrDefaultAsync();
             if (result == null)
             {
                 return new ServiceResponse<MenuItemEntity>()
@@ -105,8 +103,8 @@ public class MenuService(DataContext context) : IMenuService
             
             result.Status = !result.Status;
             
-            _context.Menus.Update(result);
-            await _context.SaveChangesAsync();
+            context.Menus.Update(result);
+            await context.SaveChangesAsync();
 
             return new ServiceResponse<MenuItemEntity>()
             {
@@ -126,7 +124,7 @@ public class MenuService(DataContext context) : IMenuService
     {
         try
         {
-            var result = await _context.Menus.Where(x => x.ID == Id).FirstOrDefaultAsync();
+            var result = await context.Menus.Where(x => x.ID == Id).FirstOrDefaultAsync();
             if (result == null)
             {
                 return new ServiceResponse<Guid>()
@@ -134,8 +132,8 @@ public class MenuService(DataContext context) : IMenuService
                     Message = "Menu Not Found",
                 };
             }
-            _context.Menus.Remove(result);
-            await _context.SaveChangesAsync();
+            context.Menus.Remove(result);
+            await context.SaveChangesAsync();
             
             //Delete Files
             var images = result.ImagesOfTheFood.Split(',');

@@ -114,9 +114,10 @@ public class OrderService(DataContext context) : IOrderService
             
             order.Status = OrderStatusEnumId.Delivering;
             
-            //TODO: if you have time, add push notification to the user.. notifying them of the order being delivered.
             context.Orders.Update(order);
             await context.SaveChangesAsync();
+            
+            //TODO: if you have time, add push notification to the user.. notifying them of the order being delivered.
 
             return new ServiceResponse<UserEntity>()
                 { Data = deliveryPerson, Message = "Order assigned", isSuccess = true };
@@ -179,7 +180,6 @@ public class OrderService(DataContext context) : IOrderService
                     FullName = x.DeliveryPerson.FullName,
                     ProfilePicturePath = x.DeliveryPerson.ProfilePicturePath,
                 },
-                
                 OrderItems = x.OrderItems.Select(oi => new GetOrderItemDto()
                 {
                     Quantity = oi.Quantity,

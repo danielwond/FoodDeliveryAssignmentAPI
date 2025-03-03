@@ -13,5 +13,7 @@ public class OrderEntity : BaseEntity
     public string DeliveryLocationLongitude { get; set; }
     public UserEntity Customer { get; set; }
     public UserEntity? DeliveryPerson { get; set; }
+    
+    public PaymentMethodsEnum PaymentMethod { get; set; }
     public ICollection<OrderItemEntity> OrderItems { get; set; }
 }

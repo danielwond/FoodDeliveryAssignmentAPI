@@ -6,6 +6,5 @@ public class OrderItemEntity
     public Guid OrderId { get; set; }
     public Guid MenuItemId { get; set; }
     public int Quantity { get; set; }
-
     public MenuItemEntity MenuItem { get; set; }
 }
