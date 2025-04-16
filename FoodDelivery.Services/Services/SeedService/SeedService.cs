@@ -219,12 +219,30 @@ private async Task SeedMenus()
     private FormFile GetFileFromPath(string filePath)
     {
         var stream = File.OpenRead(filePath);
-        var file = new FormFile(stream, 0, stream.Length, Path.GetFileName(filePath), Path.GetFileName(stream.Name))
+        var contentType = GetContentType(filePath);
+
+        var file = new FormFile(stream, 0, stream.Length, Path.GetFileName(filePath), Path.GetFileName(filePath))
         {
             Headers = new HeaderDictionary(),
-            ContentType = "application/pdf"
+            ContentType = contentType
         };
+
         Console.WriteLine(File.Exists(filePath));
         return file;
     }
+
+    private string GetContentType(string path)
+    {
+        var ext = Path.GetExtension(path).ToLowerInvariant();
+        return ext switch
+        {
+            ".jpg" or ".jpeg" => "image/jpeg",
+            ".png" => "image/png",
+            ".gif" => "image/gif",
+            ".bmp" => "image/bmp",
+            ".webp" => "image/webp",
+            _ => "application/octet-stream" // fallback
+        };
+    }
+
 }
