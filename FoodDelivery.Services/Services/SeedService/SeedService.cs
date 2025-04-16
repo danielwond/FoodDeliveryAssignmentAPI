@@ -46,57 +46,64 @@ public class SeedService(DataContext context, IMenuService menuService, IOptions
         }
     }
 
-    private async Task SeedMenus()
+private async Task SeedMenus()
+{
+    try
     {
-        try
+        var menus = await context.Menus.ToListAsync();
+        if (menus.Count == 0)
         {
-            var menus = await context.Menus.ToListAsync();
-            if (menus.Count == 0)
+            var cheeseBurger = new CreateMenuDto
             {
-                var cheeseBurger = new CreateMenuDto(){
-                    FoodName = "Cheese Burger",
-                    Description = "A perfectly grilled beef patty topped with a slice of melted American cheese, fresh lettuce, vine-ripened tomatoes, crunchy onions, and dill pickles—all stacked on a warm, toasted sesame seed bun. A timeless favorite with every bite bringing that rich, cheesy goodness.",
-                    Price = (decimal)12.5,
-                    Images = 
-                    [
-                        GetFileFromPath("/Users/danny/Desktop/Images/Cheese Burger/cheese-burger-1.jpg"), 
-                        GetFileFromPath("/Users/danny/Desktop/Images/Cheese Burger/cheese-burger-2.jpg"), 
-                        GetFileFromPath("/Users/danny/Desktop/Images/Cheese Burger/cheese-burger-3.jpg")
-                    ]
-                };
-                var hamburger = new CreateMenuDto(){
-                    FoodName = "Classic Hamburger",
-                    Description = "A juicy, seasoned beef patty grilled to perfection, topped with crisp lettuce, fresh tomato slices, crunchy onions, and tangy pickles—all nestled in a soft, toasted sesame seed bun. Pure, no-frills flavor that never goes out of style.",
-                    Price = 13,
-                    Images = 
-                    [
-                        GetFileFromPath("/Users/danny/Desktop/Images/Hamburger/hamburger-1.jpg"), 
-                        GetFileFromPath("/Users/danny/Desktop/Images/Hamburger/hamburger-2.jpg"), 
-                        GetFileFromPath("/Users/danny/Desktop/Images/Hamburger/hamburger-3.jpg")
-                    ]
-                };
-                var lasagna = new CreateMenuDto(){
-                    FoodName = "Lasagna",
-                    Description = "Layers of tender pasta sheets, rich and savory meat sauce, creamy béchamel, and melted mozzarella cheese—baked to golden, bubbly perfection. Every bite delivers a comforting blend of flavors, from hearty ground beef and tomato to smooth, cheesy goodness. A timeless Italian favorite that’s warm, filling, and irresistibly satisfying.",
-                    Price = (decimal)15.5,
-                    Images = 
-                    [
-                        GetFileFromPath("/Users/danny/Desktop/Images/Lasagna/lasagna-1.jpg"), 
-                        GetFileFromPath("/Users/danny/Desktop/Images/Lasagna/lasagna-2.jpg"), 
-                        GetFileFromPath("/Users/danny/Desktop/Images/Lasagna/lasagna-3.jpg")
-                    ]
-                };
-                await menuService.AddMenu(hamburger);
-                await menuService.AddMenu(cheeseBurger);
-                await menuService.AddMenu(lasagna);
-            }
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
+                FoodName = "Cheese Burger",
+                Description = "A perfectly grilled beef patty topped with a slice of melted American cheese, fresh lettuce, vine-ripened tomatoes, crunchy onions, and dill pickles—all stacked on a warm, toasted sesame seed bun. A timeless favorite with every bite bringing that rich, cheesy goodness.",
+                Price = 12.5m,
+                Images = 
+                [
+                    GetFileFromPath(_seedOptions.Images["CheeseBurger"].Img1),
+                    GetFileFromPath(_seedOptions.Images["CheeseBurger"].Img2),
+                    GetFileFromPath(_seedOptions.Images["CheeseBurger"].Img3)
+                ]
+            };
+
+            var hamburger = new CreateMenuDto
+            {
+                FoodName = "Classic Hamburger",
+                Description = "A juicy, seasoned beef patty grilled to perfection, topped with crisp lettuce, fresh tomato slices, crunchy onions, and tangy pickles—all nestled in a soft, toasted sesame seed bun. Pure, no-frills flavor that never goes out of style.",
+                Price = 13m,
+                Images = 
+                [
+                    GetFileFromPath(_seedOptions.Images["Hamburger"].Img1),
+                    GetFileFromPath(_seedOptions.Images["Hamburger"].Img2),
+                    GetFileFromPath(_seedOptions.Images["Hamburger"].Img3)
+                ]
+            };
+
+            var lasagna = new CreateMenuDto
+            {
+                FoodName = "Lasagna",
+                Description = "Layers of tender pasta sheets, rich and savory meat sauce, creamy béchamel, and melted mozzarella cheese—baked to golden, bubbly perfection. Every bite delivers a comforting blend of flavors, from hearty ground beef and tomato to smooth, cheesy goodness. A timeless Italian favorite that’s warm, filling, and irresistibly satisfying.",
+                Price = 15.5m,
+                Images = 
+                [
+                    GetFileFromPath(_seedOptions.Images["Lasagna"].Img1),
+                    GetFileFromPath(_seedOptions.Images["Lasagna"].Img2),
+                    GetFileFromPath(_seedOptions.Images["Lasagna"].Img3)
+                ]
+            };
+
+            await menuService.AddMenu(hamburger);
+            await menuService.AddMenu(cheeseBurger);
+            await menuService.AddMenu(lasagna);
         }
     }
+    catch (Exception e)
+    {
+        Console.WriteLine(e);
+        throw;
+    }
+}
+
 
     //Seed Accounts
     private async Task SeedAccounts()
