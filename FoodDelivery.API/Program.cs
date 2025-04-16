@@ -9,7 +9,15 @@ builder.Services.ConfigureServicesInjection();
 builder.Services.ConfigureOptionInjections(builder.Configuration);
 builder.Services.ConfigureAuthInjection(builder.Configuration);
 
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", builder =>
+    {
+        builder.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
 
 builder.Services.AddControllers();
 
@@ -38,7 +46,10 @@ if (app.Environment.IsDevelopment())
     app.UsePathBase("/swagger/index.html");
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
+
+app.UseCors("AllowAll");
+
 
 app.UseAuthorization();
 

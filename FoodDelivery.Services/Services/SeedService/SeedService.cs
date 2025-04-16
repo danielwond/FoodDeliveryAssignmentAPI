@@ -1,36 +1,43 @@
 using FoodDelivery.Services.Data;
 using FoodDelivery.Services.Data.Entities;
+using FoodDelivery.Services.Services.MenuService;
 using FoodDelivery.Shared.Enums;
 using FoodDelivery.Shared.Helpers;
+using FoodDelivery.Shared.Models.DTOs.Menu;
+using FoodDelivery.Shared.Options;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace FoodDelivery.Services.Services.SeedService;
 
-public class SeedService(DataContext context) : ISeedService
+public class SeedService(DataContext context, IMenuService menuService, IOptions<SeedDataOptions> seedOptions) : ISeedService
 {
-    private readonly DataContext _context = context;
-    
+    private readonly SeedDataOptions _seedOptions = seedOptions.Value;
     //lat long
     //43.03825° N, 76.13116° W
 
-    public async Task<string> SeedAsync()
+    public async Task SeedAsync()
     {
         try
         {
             //seed account
-            var accounts = await SeedAccounts();
-            if (accounts == false)
+            if (_seedOptions.SeedAccounts)
             {
-                throw new Exception("Seeding Accounts failed");
+                await SeedAccounts();
             }
-            var configurations = await SeedConfigurations();
-            if (configurations == false)
+            
+            //seed configurations
+            if (_seedOptions.SeedConfigurations)
             {
-                throw new Exception("Seeding Configurations failed");
+                await SeedConfigurations();
             }
-
-            await SeedMenus();
-            return "";
+            
+            //seed menus
+            if (_seedOptions.SeedMenus)
+            {
+                await SeedMenus();
+            }
         }
         catch (Exception e)
         {
@@ -43,22 +50,45 @@ public class SeedService(DataContext context) : ISeedService
     {
         try
         {
-            var menus = await _context.Menus.ToListAsync();
+            var menus = await context.Menus.ToListAsync();
             if (menus.Count == 0)
             {
-                var newMenu = new MenuItemEntity()
-                {
-                    ID = Guid.NewGuid(),
-                    CreatedOn = DateTime.UtcNow.ToUniversalTime(),
-                    ModifiedOn = DateTime.UtcNow.ToUniversalTime(),
-                    Description = "Food1",
-                    Status = true,
-                    ImagesOfTheFood = "",
-                    Price = 50,
-                    FoodName = "Food1",
+                var cheeseBurger = new CreateMenuDto(){
+                    FoodName = "Cheese Burger",
+                    Description = "A perfectly grilled beef patty topped with a slice of melted American cheese, fresh lettuce, vine-ripened tomatoes, crunchy onions, and dill pickles—all stacked on a warm, toasted sesame seed bun. A timeless favorite with every bite bringing that rich, cheesy goodness.",
+                    Price = (decimal)12.5,
+                    Images = 
+                    [
+                        GetFileFromPath("/Users/danny/Desktop/Images/Cheese Burger/cheese-burger-1.jpg"), 
+                        GetFileFromPath("/Users/danny/Desktop/Images/Cheese Burger/cheese-burger-2.jpg"), 
+                        GetFileFromPath("/Users/danny/Desktop/Images/Cheese Burger/cheese-burger-3.jpg")
+                    ]
                 };
-                await _context.Menus.AddAsync(newMenu);
-                await _context.SaveChangesAsync();
+                var hamburger = new CreateMenuDto(){
+                    FoodName = "Classic Hamburger",
+                    Description = "A juicy, seasoned beef patty grilled to perfection, topped with crisp lettuce, fresh tomato slices, crunchy onions, and tangy pickles—all nestled in a soft, toasted sesame seed bun. Pure, no-frills flavor that never goes out of style.",
+                    Price = 13,
+                    Images = 
+                    [
+                        GetFileFromPath("/Users/danny/Desktop/Images/Hamburger/hamburger-1.jpg"), 
+                        GetFileFromPath("/Users/danny/Desktop/Images/Hamburger/hamburger-2.jpg"), 
+                        GetFileFromPath("/Users/danny/Desktop/Images/Hamburger/hamburger-3.jpg")
+                    ]
+                };
+                var lasagna = new CreateMenuDto(){
+                    FoodName = "Lasagna",
+                    Description = "Layers of tender pasta sheets, rich and savory meat sauce, creamy béchamel, and melted mozzarella cheese—baked to golden, bubbly perfection. Every bite delivers a comforting blend of flavors, from hearty ground beef and tomato to smooth, cheesy goodness. A timeless Italian favorite that’s warm, filling, and irresistibly satisfying.",
+                    Price = (decimal)15.5,
+                    Images = 
+                    [
+                        GetFileFromPath("/Users/danny/Desktop/Images/Lasagna/lasagna-1.jpg"), 
+                        GetFileFromPath("/Users/danny/Desktop/Images/Lasagna/lasagna-2.jpg"), 
+                        GetFileFromPath("/Users/danny/Desktop/Images/Lasagna/lasagna-3.jpg")
+                    ]
+                };
+                await menuService.AddMenu(hamburger);
+                await menuService.AddMenu(cheeseBurger);
+                await menuService.AddMenu(lasagna);
             }
         }
         catch (Exception e)
@@ -69,11 +99,10 @@ public class SeedService(DataContext context) : ISeedService
     }
 
     //Seed Accounts
-    private async Task<bool> SeedAccounts()
+    private async Task SeedAccounts()
     {
-        var result = true;
         
-        var users = await _context.Users.ToListAsync();
+        var users = await context.Users.ToListAsync();
         
         var admins = users.Where(x =>x.UserRole == UserRoleEnum.Admin).ToList();
         var customers = users.Where(x =>x.UserRole == UserRoleEnum.Customer).ToList();
@@ -96,10 +125,8 @@ public class SeedService(DataContext context) : ISeedService
                 PhoneNumber = "admin1",
                 UserRole = UserRoleEnum.Admin,
             };
-            await _context.Users.AddAsync(admin);
-            var dbResult = await _context.SaveChangesAsync();
-            
-            result = dbResult != 0;        
+            await context.Users.AddAsync(admin);
+            await context.SaveChangesAsync();
         }
 
         if (drivers.Count == 0)
@@ -120,10 +147,8 @@ public class SeedService(DataContext context) : ISeedService
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt,
             };
-            await _context.Users.AddAsync(driver);
-            var dbResult = await _context.SaveChangesAsync();
-            
-            result = dbResult != 0 ? true :  false;
+            await context.Users.AddAsync(driver);
+            await context.SaveChangesAsync();
         }
 
         if (customers.Count == 0)
@@ -144,43 +169,55 @@ public class SeedService(DataContext context) : ISeedService
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt,
             };
-            await _context.Users.AddAsync(customer);
-            var dbResult = await _context.SaveChangesAsync();
-            
-            result = dbResult != 0;
+            await context.Users.AddAsync(customer);
+            await context.SaveChangesAsync();
         }
-        return result;
     }
     //Seed Configurations
-    private async Task<bool> SeedConfigurations()
+    private async Task SeedConfigurations()
     {
-        var result = false;
-        var configs = await _context.Configurations.ToListAsync();
-
-        if (configs.Count != 0) return result;
-        
-        var longitude = new ConfigurationsEntity()
+        var configs = await context.Configurations.ToListAsync();
+        if (configs.Count == 0)
         {
-            ID = Guid.NewGuid(),
-            Name = "Restaurant Longitude",
-            Description = "Restaurant Longitude",
-            ConfigurationsEnum = ConfigurationsEnum.RestaurantLocationLongitude,
-            Value = "43.03825"
-        };
+            var longitude = new ConfigurationsEntity()
+            {
+                ID = Guid.NewGuid(),
+                Name = "Restaurant Longitude",
+                Description = "Restaurant Longitude",
+                ConfigurationsEnum = ConfigurationsEnum.RestaurantLocationLongitude,
+                Value = "43.03825"
+            };
 
-        var latitude = new ConfigurationsEntity()
+            var latitude = new ConfigurationsEntity()
+            {
+                ID = Guid.NewGuid(),
+                Name = "Restaurant Latitude",
+                Description = "Restaurant Latitude",
+                ConfigurationsEnum = ConfigurationsEnum.RestaurantLocationLatitude,
+                Value = "76.13116",
+            };
+            var name = new ConfigurationsEntity()
+            {
+                ID = Guid.NewGuid(),
+                Name = "Restaurant Name",
+                Description = "It is a good restaurant with good food and good people",
+                ConfigurationsEnum = ConfigurationsEnum.RestaurantName,
+                Value = "QuickBite"
+            };
+            await context.Configurations.AddRangeAsync(longitude, latitude, name);
+            await context.SaveChangesAsync();
+        }
+    }
+
+    private FormFile GetFileFromPath(string filePath)
+    {
+        var stream = File.OpenRead(filePath);
+        var file = new FormFile(stream, 0, stream.Length, Path.GetFileName(filePath), Path.GetFileName(stream.Name))
         {
-            ID = Guid.NewGuid(),
-            Name = "Restaurant Latitude",
-            Description = "Restaurant Latitude",
-            ConfigurationsEnum = ConfigurationsEnum.RestaurantLocationLatitude,
-            Value = "76.13116",
+            Headers = new HeaderDictionary(),
+            ContentType = "application/pdf"
         };
-        await _context.Configurations.AddRangeAsync(longitude, latitude);
-        var dbResult= await _context.SaveChangesAsync();
-            
-        result = dbResult != 0;
-        return result;
-        
+        Console.WriteLine(File.Exists(filePath));
+        return file;
     }
 }

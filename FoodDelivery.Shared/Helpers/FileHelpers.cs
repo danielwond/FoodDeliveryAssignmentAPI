@@ -9,7 +9,7 @@ public static class FileHelpers
     {
         var fileExtension = Path.GetExtension(file.FileName);
         var fileName = Guid.NewGuid() + fileExtension;
-        var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "Files", fileType.ToString());
+        var folderPath = Path.Combine("Files", fileType.ToString());
         var filePath = Path.Combine(folderPath, fileName);
 
         if (!Directory.Exists(folderPath))

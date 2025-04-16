@@ -5,17 +5,18 @@ using FoodDelivery.Shared.Enums;
 using FoodDelivery.Shared.Models.DTOs.Menu;
 using FoodDelivery.Shared.Models.DTOs.Order;
 using FoodDelivery.Shared.Models.DTOs.User;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace FoodDelivery.Services.Services.OrderService;
 
-public class OrderService(DataContext context) : IOrderService
+public class OrderService(DataContext context, IHttpContextAccessor httpContextAccessor) : IOrderService
 {
     public async Task<ServiceResponse<List<OrderEntity>>> GetAllOrders()
     {
         try
         {
-            var result = await context.Orders.OrderByDescending(x => x.CreatedOn).ToListAsync();
+            var result = await context.Orders.Include(x => x.OrderItems).OrderByDescending(x => x.CreatedOn).ToListAsync();
             return result.Count == 0
                 ? new ServiceResponse<List<OrderEntity>>() { Message = "No orders found" }
                 : new ServiceResponse<List<OrderEntity>>()
@@ -28,108 +29,85 @@ public class OrderService(DataContext context) : IOrderService
         }
     }
 
-    public async Task<ServiceResponse<OrderEntity>> CreateOrder(CreateOrderDto id)
+public async Task<ServiceResponse<OrderEntity>> CreateOrder(CreateOrderDto data)
+{
+    try
     {
-        try
+        // 1. Validate customer
+        var customer = await context.Users.FirstOrDefaultAsync(x => x.ID == data.CustomerId);
+        if (customer == null)
         {
-            var orderId = Guid.NewGuid();
-            decimal totalPrice = 0;
-
-            // Validate customer
-            var customer = await context.Users.FirstOrDefaultAsync(x => x.ID == id.CustomerId);
-            if (customer == null)
-            {
-                return new ServiceResponse<OrderEntity>() { Message = "Customer not found" };
-            }
-
-            // Validate menu items and create order items
-            var menuItems = new List<OrderItemEntity>();
-            foreach (var orderItem in id.OrderItems)
-            {
-                var menuItem = await context.Menus.FirstOrDefaultAsync(x => x.ID == orderItem.MenuItemId);
-                if (menuItem == null)
-                {
-                    return new ServiceResponse<OrderEntity>() { Message = "Menu item not found" };
-                }
-
-                menuItems.Add(new OrderItemEntity()
-                {
-                    Id = Guid.NewGuid(),
-                    MenuItemId = menuItem.ID,
-                    Quantity = orderItem.Quantity,
-                    MenuItem = menuItem,
-                    OrderId = orderId
-                });
-                totalPrice += menuItem.Price;
-            }
-
-            // Create order
-            var order = new OrderEntity()
-            {
-                Id = orderId,
-                CustomerId = id.CustomerId,
-                CreatedOn = DateTime.UtcNow,
-                OrderItems = menuItems,
-                Status = OrderStatusEnumId.Pending,
-                Customer = customer,
-                TotalPrice = totalPrice,
-                ModifiedOn = DateTime.UtcNow,
-                DeliveryLocationLatitude = id.DeliveryLocationLatitude,
-                DeliveryLocationLongitude = id.DeliveryLocationLongitude
-            };
-
-            await context.Orders.AddAsync(order);
-            await context.SaveChangesAsync();
-
-            return new ServiceResponse<OrderEntity>() { Data = order, Message = "Order created", isSuccess = true };
+            return new ServiceResponse<OrderEntity>() { Message = "Customer not found" };
         }
-        catch (Exception e)
+
+        // 2. Get all related menu items in a single database query
+        var menuItemIds = data.OrderItems.Select(x => x.MenuItemId).ToList();
+        var menuItems = await context.Menus
+            .Where(x => menuItemIds.Contains(x.ID))
+            .ToDictionaryAsync(x => x.ID, x => x);
+
+        // 3. Validate all menu items exist
+        if (menuItems.Count != menuItemIds.Count)
         {
-            Console.WriteLine(e);
-            throw;
+            return new ServiceResponse<OrderEntity>() { Message = "One or more menu items not found" };
         }
+
+        // 4. Create order entity with its items
+        var orderItems = new List<OrderItemEntity>();
+        decimal totalPrice = 0;
+
+        foreach (var item in data.OrderItems)
+        {
+            var menuItem = menuItems[item.MenuItemId];
+            totalPrice += menuItem.Price * item.Quantity;
+            
+            orderItems.Add(new OrderItemEntity
+            {
+                Id = Guid.NewGuid(),
+                MenuItemId = menuItem.ID,
+                Quantity = item.Quantity,
+                MenuItem = menuItem
+                // No need to specify OrderId - EF Core will handle this relationship
+            });
+        }
+
+        var order = new OrderEntity
+        {
+            CustomerId = data.CustomerId,
+            CreatedOn = DateTime.UtcNow,
+            Status = OrderStatusEnumId.Pending,
+            ModifiedOn = DateTime.UtcNow,
+            Message = data.Message,
+            PaymentMethod = data.PaymentMethod,
+            subtotal = data.subtotal,
+            tax = data.tax,
+            total = totalPrice,
+            OrderItems = orderItems,
+            Customer = customer
+        };
+
+        // 5. Add and save everything in one go
+        await context.Orders.AddAsync(order);
+        await context.SaveChangesAsync();
+
+        return new ServiceResponse<OrderEntity>
+        {
+            Data = order,
+            Message = "Order created successfully",
+            isSuccess = true
+        };
     }
-
-    public async Task<ServiceResponse<UserEntity>> AssignDeliveryToOrder(Guid orderId, Guid userId)
+    catch (Exception e)
     {
-        try
+        Console.WriteLine(e);
+        return new ServiceResponse<OrderEntity>
         {
-            //check order
-            var order = await context.Orders.FirstOrDefaultAsync(x => x.Id == orderId);
-            if (order == null)
-            {
-                return new ServiceResponse<UserEntity>() { Message = "Order not found" };
-            }
-
-            //check delivery person
-            var deliveryPerson = await context.Users.FirstOrDefaultAsync(x => x.ID == userId);
-            if (deliveryPerson == null)
-            {
-                return new ServiceResponse<UserEntity>() { Message = "Delivery Person not found" };
-            }
-
-            //assign order to delivery person
-            order.DeliveryPersonId = deliveryPerson.ID;
-            order.DeliveryPerson = deliveryPerson;
-            
-            order.Status = OrderStatusEnumId.Delivering;
-            
-            context.Orders.Update(order);
-            await context.SaveChangesAsync();
-            
-            //TODO: if you have time, add push notification to the user.. notifying them of the order being delivered.
-
-            return new ServiceResponse<UserEntity>()
-                { Data = deliveryPerson, Message = "Order assigned", isSuccess = true };
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
+            Message = $"Error creating order: {e.Message}"
+        };
     }
+}
 
-    public async Task<ServiceResponse<OrderEntity>> ChangeOrderStatus(Guid orderId, OrderStatusEnumId statudId)
+    public async Task<ServiceResponse<OrderEntity>> ChangeOrderStatus(int orderId, OrderStatusEnumId statudId)
     {
         try
         {
@@ -166,7 +144,6 @@ public class OrderService(DataContext context) : IOrderService
                 .Where(x => x.CustomerId == userId)
                 .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.MenuItem)
-                .Include(orderEntity => orderEntity.DeliveryPerson)
                 .AsNoTracking()
                 .ToListAsync(); // Execute the query and retrieve the data
 
@@ -175,11 +152,7 @@ public class OrderService(DataContext context) : IOrderService
             {
                 Id = x.Id,
                 Status = x.Status.ToString(),
-                DeliveryPerson = x.DeliveryPerson == null ? null : new GetDriverDto()
-                {
-                    FullName = x.DeliveryPerson.FullName,
-                    ProfilePicturePath = x.DeliveryPerson.ProfilePicturePath,
-                },
+                TotalPrice = x.total,
                 OrderItems = x.OrderItems.Select(oi => new GetOrderItemDto()
                 {
                     Quantity = oi.Quantity,
@@ -190,10 +163,14 @@ public class OrderService(DataContext context) : IOrderService
                         Description = oi.MenuItem.Description,
                         FoodName = oi.MenuItem.FoodName,
                         ImagesOfTheFood = oi.MenuItem.ImagesOfTheFood.Length != 0
-                            ? oi.MenuItem.ImagesOfTheFood.Split(',').ToList() 
+                            ? oi.MenuItem.ImagesOfTheFood.Split(',').Select(addServerURL).ToList() 
                             : [],
                     },
                 }).ToList(),
+                PaymentMethod = x.PaymentMethod,
+                orderDate = x.CreatedOn,
+                Tax = x.tax,
+                SubTotal = x.subtotal,
             }).ToList();
 
             response.Data = result;
@@ -208,19 +185,22 @@ public class OrderService(DataContext context) : IOrderService
         return response;
     }
 
-    public async Task<ServiceResponse<Guid>> CancelOrder(Guid orderId)
+    public async Task<ServiceResponse<int>> CancelOrder(int orderId)
     {
         try
         {
             var order = await context.Orders.FirstOrDefaultAsync(x => x.Id == orderId);
             if (order == null)
             {
-                return new ServiceResponse<Guid>() { Message = "Order not found" };
+                return new ServiceResponse<int>() { Message = "Order not found" };
             }
+            
             order.Status = OrderStatusEnumId.Cancelled;
+            
             context.Orders.Update(order);
             await context.SaveChangesAsync();
-            return new ServiceResponse<Guid>() { Data = order.Id, Message = "Order cancelled", isSuccess = true };
+            
+            return new ServiceResponse<int>() { Data = order.Id, Message = "Order cancelled", isSuccess = true };
         }
         catch (Exception e)
         {
@@ -228,48 +208,16 @@ public class OrderService(DataContext context) : IOrderService
             throw;
         }
     }
-
-    public async Task<ServiceResponse<string>> UpdateDriverCoordinates(Guid orderId, string longitude, string latitude)
+    
+    
+    private string addServerURL(string path)
     {
-        var order = await context.Orders.AsNoTracking().FirstOrDefaultAsync(x => x.Id == orderId);
-        if (order == null)
-        {
-            return new ServiceResponse<string>() { Message = "Order not found" };
-        }
-        var tracking = await context.DeliveryTrackings.Where(x => x.OrderId == orderId).FirstOrDefaultAsync();
-        if (tracking == null)
-        {
-            var newTracking = new DeliveryTrackingEntity()
-            {
-                Id = Guid.NewGuid(),
-                OrderId = orderId,
-                ModifiedOn = DateTime.Now,
-                CreatedOn = DateTime.Now,
-                Latitude = latitude,
-                Longitude = longitude,
-                Status = true,
-                Order = order,
-            };
-            await context.DeliveryTrackings.AddAsync(newTracking);
-            await context.SaveChangesAsync();
+        var request = httpContextAccessor.HttpContext?.Request;
 
-            return new ServiceResponse<string>()
-            {
-                Message = "Tracking updated",
-                isSuccess = true,
-            };
-        }
-        
-        tracking.Longitude = longitude;
-        tracking.Latitude = latitude;
-        
-        context.DeliveryTrackings.Update(tracking);
-        await context.SaveChangesAsync();
-
-        return new ServiceResponse<string>()
-        {
-            Message = "Tracking updated",
-            isSuccess = true,
-        };
+        if (request == null)
+            return path;
+        var myURL = "/api/files/get?filePath=";
+        var baseUrl = $"{request.Scheme}://{request.Host}{request.PathBase}{myURL}{path}";
+        return baseUrl;    
     }
 }

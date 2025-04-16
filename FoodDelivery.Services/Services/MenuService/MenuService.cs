@@ -4,18 +4,27 @@ using FoodDelivery.Shared;
 using FoodDelivery.Shared.Enums;
 using FoodDelivery.Shared.Helpers;
 using FoodDelivery.Shared.Models.DTOs.Menu;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace FoodDelivery.Services.Services.MenuService;
 
-public class MenuService(DataContext context) : IMenuService
+public class MenuService(DataContext context, IHttpContextAccessor httpContextAccessor) : IMenuService
 {
-    public async Task<ServiceResponse<IEnumerable<MenuItemEntity>>> GetMenus()
+    public async Task<ServiceResponse<IEnumerable<GetMenuDto>>> GetMenus()
     {
         var result = await context.Menus.AsNoTracking().ToListAsync();
-        return new ServiceResponse<IEnumerable<MenuItemEntity>>()
+        var data = result.Select(x => new GetMenuDto()
         {
-            Data = result,
+            ID = x.ID,
+            ImagesOfTheFood = x.ImagesOfTheFood.Split(',').Select(addServerURL).ToList(),
+            Price = x.Price,
+            Description = x.Description,
+            FoodName = x.FoodName,
+        }).ToList();
+        return new ServiceResponse<IEnumerable<GetMenuDto>>()
+        {
+            Data = data,
             Message = "All Fetched",
             isSuccess = true
         };
@@ -51,15 +60,15 @@ public class MenuService(DataContext context) : IMenuService
                     Message = "Menu already exists",
                 };
             }
-            var imgs = string.Empty;
-            if (dto.Images.Count != 0)
+            
+            var imagePaths = new List<string>();
+            foreach (var img in dto.Images)
             {
-                foreach (var img in dto.Images)
-                {
-                    var path = await FileHelpers.UploadImage(img, FileTypeEnum.ImgMenu);
-                    imgs += path + ",";
-                }
+                var path = await FileHelpers.UploadImage(img, FileTypeEnum.ImgMenu);
+                imagePaths.Add(path);
             }
+            var imgs = string.Join(",", imagePaths);
+            
             var newMenu = new MenuItemEntity()
             {
                 FoodName = dto.FoodName,
@@ -156,5 +165,16 @@ public class MenuService(DataContext context) : IMenuService
             Console.WriteLine(e);
             throw;
         }
+    }
+
+    private string addServerURL(string path)
+    {
+        var request = httpContextAccessor.HttpContext?.Request;
+
+        if (request == null)
+            return path;
+        var myURL = "/api/files/get?filePath=";
+        var baseUrl = $"{request.Scheme}://{request.Host}{request.PathBase}{myURL}{path}";
+        return baseUrl;    
     }
 }

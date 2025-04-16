@@ -27,13 +27,16 @@ public static class DependencyInjectionConfigurations
     public static void ConfigureOptionInjections(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<JWTOptions>(configuration.GetSection("JWTOptions"));
+        services.Configure<SeedDataOptions>(configuration.GetSection("SeedData"));
     }
     public static void ConfigureServicesInjection(this IServiceCollection services)
     {
+        services.AddScoped<ISeedService, SeedService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IMenuService, MenuService>();
         services.AddScoped<IOrderService, OrderService>();
-        services.AddScoped<ISeedService, SeedService>();
+        
+        services.AddHttpContextAccessor();
     }
 
     public static void ConfigureAuthInjection(this IServiceCollection services, IConfiguration configuration)

@@ -7,8 +7,7 @@ namespace FoodDelivery.Services.Services.MenuService;
 
 public interface IMenuService
 {
-    public Task<ServiceResponse<IEnumerable<MenuItemEntity>>> GetMenus();
-    public Task<ServiceResponse<MenuItemEntity>> GetMenu(Guid id);
+    public Task<ServiceResponse<IEnumerable<GetMenuDto>>> GetMenus();
     public Task<ServiceResponse<MenuItemEntity>> AddMenu(CreateMenuDto dto);
 
     public Task<ServiceResponse<MenuItemEntity>> ChangeMenuStatus(Guid Id);

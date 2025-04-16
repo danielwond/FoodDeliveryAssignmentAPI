@@ -9,7 +9,7 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
     public DbSet<UserEntity> Users { get; set; }
     
     public DbSet<OrderItemEntity> OrderItems { get; set; }
-    public DbSet<DeliveryTrackingEntity> DeliveryTrackings { get; set; }
     public DbSet<MenuItemEntity> Menus { get; set; }
     public DbSet<ConfigurationsEntity> Configurations { get; set; }
+    public DbSet<DriverEntity> Drivers { get; set; }
 }

@@ -2,5 +2,5 @@ namespace FoodDelivery.Services.Services.SeedService;
 
 public interface ISeedService
 {
-    public Task<string> SeedAsync();
+    public Task SeedAsync();
 }

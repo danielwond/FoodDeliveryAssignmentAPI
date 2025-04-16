@@ -48,14 +48,22 @@ namespace FoodDelivery.Services.Migrations
                     b.ToTable("Configurations");
                 });
 
-            modelBuilder.Entity("FoodDelivery.Services.Data.Entities.DeliveryTrackingEntity", b =>
+            modelBuilder.Entity("FoodDelivery.Services.Data.Entities.DriverEntity", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime(6)");
+                    b.Property<bool>("DriverActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<string>("Latitude")
                         .IsRequired()
@@ -65,20 +73,25 @@ namespace FoodDelivery.Services.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<DateTime>("ModifiedOn")
-                        .HasColumnType("datetime(6)");
+                    b.Property<byte[]>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("longblob");
 
-                    b.Property<Guid>("OrderId")
-                        .HasColumnType("char(36)");
+                    b.Property<byte[]>("PasswordSalt")
+                        .IsRequired()
+                        .HasColumnType("longblob");
 
-                    b.Property<bool>("Status")
-                        .HasColumnType("tinyint(1)");
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
-                    b.HasKey("Id");
+                    b.Property<string>("ProfilePicturePath")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
-                    b.HasIndex("OrderId");
+                    b.HasKey("ID");
 
-                    b.ToTable("DeliveryTrackings");
+                    b.ToTable("Drivers");
                 });
 
             modelBuilder.Entity("FoodDelivery.Services.Data.Entities.MenuItemEntity", b =>
@@ -96,11 +109,13 @@ namespace FoodDelivery.Services.Migrations
 
                     b.Property<string>("FoodName")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasAnnotation("Relational:JsonPropertyName", "Name");
 
                     b.Property<string>("ImagesOfTheFood")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasAnnotation("Relational:JsonPropertyName", "imageUrl");
 
                     b.Property<DateTime>("ModifiedOn")
                         .HasColumnType("datetime(6)");
@@ -118,9 +133,11 @@ namespace FoodDelivery.Services.Migrations
 
             modelBuilder.Entity("FoodDelivery.Services.Data.Entities.OrderEntity", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime(6)");
@@ -128,16 +145,8 @@ namespace FoodDelivery.Services.Migrations
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("char(36)");
 
-                    b.Property<string>("DeliveryLocationLatitude")
-                        .IsRequired()
+                    b.Property<string>("Message")
                         .HasColumnType("longtext");
-
-                    b.Property<string>("DeliveryLocationLongitude")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<Guid?>("DeliveryPersonId")
-                        .HasColumnType("char(36)");
 
                     b.Property<DateTime>("ModifiedOn")
                         .HasColumnType("datetime(6)");
@@ -148,14 +157,18 @@ namespace FoodDelivery.Services.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("TotalPrice")
+                    b.Property<double>("subtotal")
+                        .HasColumnType("double");
+
+                    b.Property<double>("tax")
+                        .HasColumnType("double");
+
+                    b.Property<decimal>("total")
                         .HasColumnType("decimal(65,30)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
-
-                    b.HasIndex("DeliveryPersonId");
 
                     b.ToTable("Orders");
                 });
@@ -169,11 +182,11 @@ namespace FoodDelivery.Services.Migrations
                     b.Property<Guid>("MenuItemId")
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid?>("OrderEntityId")
-                        .HasColumnType("char(36)");
+                    b.Property<int?>("OrderEntityId")
+                        .HasColumnType("int");
 
-                    b.Property<Guid>("OrderId")
-                        .HasColumnType("char(36)");
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
@@ -233,17 +246,6 @@ namespace FoodDelivery.Services.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("FoodDelivery.Services.Data.Entities.DeliveryTrackingEntity", b =>
-                {
-                    b.HasOne("FoodDelivery.Services.Data.Entities.OrderEntity", "Order")
-                        .WithMany()
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Order");
-                });
-
             modelBuilder.Entity("FoodDelivery.Services.Data.Entities.OrderEntity", b =>
                 {
                     b.HasOne("FoodDelivery.Services.Data.Entities.UserEntity", "Customer")
@@ -252,13 +254,7 @@ namespace FoodDelivery.Services.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FoodDelivery.Services.Data.Entities.UserEntity", "DeliveryPerson")
-                        .WithMany()
-                        .HasForeignKey("DeliveryPersonId");
-
                     b.Navigation("Customer");
-
-                    b.Navigation("DeliveryPerson");
                 });
 
             modelBuilder.Entity("FoodDelivery.Services.Data.Entities.OrderItemEntity", b =>

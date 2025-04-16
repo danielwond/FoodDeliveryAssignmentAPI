@@ -10,16 +10,16 @@ namespace FoodDelivery.API.Controllers;
 public class FilesController() : ControllerBase
 {
     [HttpGet("get")]
-    public IActionResult GetImage(string filePath)
+    public async Task<IActionResult> GetImage(string filePath)
     {
         if (!System.IO.File.Exists(filePath))
         {
             return NotFound("File Not Found");
         }
-        var imageBytes = System.IO.File.ReadAllBytes(filePath);
-        if (imageBytes == null)
+        var imageBytes = await System.IO.File.ReadAllBytesAsync(filePath);
+        if (imageBytes.Length == 0)
         {
-            return NotFound();
+            return NotFound("Invalid File");
         }
         return File(imageBytes, GetMimeType(filePath));
     }
@@ -31,34 +31,6 @@ public class FilesController() : ControllerBase
             contentType = "application/octet-stream";
         }
         return contentType;
-    }
-    
-    [HttpGet("get-multiple")]
-    public IActionResult GetImages([FromQuery] List<string> filePaths)
-    {
-        var imageList = new List<object>();
-
-        foreach (var filePath in filePaths)
-        {
-            if (!System.IO.File.Exists(filePath))
-            {
-                continue; // Skip missing files
-            }
-
-            var imageBytes = System.IO.File.ReadAllBytes(filePath);
-            if (imageBytes != null)
-            {
-                var base64String = Convert.ToBase64String(imageBytes);
-                imageList.Add(new
-                {
-                    FileName = Path.GetFileName(filePath),
-                    MimeType = GetMimeType(filePath),
-                    Base64 = $"data:{GetMimeType(filePath)};base64,{base64String}"
-                });
-            }
-        }
-
-        return Ok(imageList);
     }
     
     [HttpGet("get-urls")]
