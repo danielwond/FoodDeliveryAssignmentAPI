@@ -19,7 +19,7 @@ public interface IUserService
     
     public Task<ServiceResponse<string>> ChangeDriverStatus(Guid driverId);
     
-    public Task<ServiceResponse<string>> UpdateUserInformation(string name, string phone, string email);
+    public Task<ServiceResponse<string>> UpdateUserInformation(GetUserDto user);
 
     public Task<ServiceResponse<GetUserDto>> GetUserInfo(Guid userId);
 }

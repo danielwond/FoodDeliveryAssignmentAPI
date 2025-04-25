@@ -33,26 +33,22 @@ public async Task<ServiceResponse<OrderEntity>> CreateOrder(CreateOrderDto data)
 {
     try
     {
-        // 1. Validate customer
         var customer = await context.Users.FirstOrDefaultAsync(x => x.ID == data.CustomerId);
         if (customer == null)
         {
             return new ServiceResponse<OrderEntity>() { Message = "Customer not found" };
         }
 
-        // 2. Get all related menu items in a single database query
         var menuItemIds = data.OrderItems.Select(x => x.MenuItemId).ToList();
         var menuItems = await context.Menus
             .Where(x => menuItemIds.Contains(x.ID))
             .ToDictionaryAsync(x => x.ID, x => x);
 
-        // 3. Validate all menu items exist
         if (menuItems.Count != menuItemIds.Count)
         {
             return new ServiceResponse<OrderEntity>() { Message = "One or more menu items not found" };
         }
 
-        // 4. Create order entity with its items
         var orderItems = new List<OrderItemEntity>();
         decimal totalPrice = 0;
 
@@ -67,7 +63,6 @@ public async Task<ServiceResponse<OrderEntity>> CreateOrder(CreateOrderDto data)
                 MenuItemId = menuItem.ID,
                 Quantity = item.Quantity,
                 MenuItem = menuItem
-                // No need to specify OrderId - EF Core will handle this relationship
             });
         }
 
@@ -86,7 +81,6 @@ public async Task<ServiceResponse<OrderEntity>> CreateOrder(CreateOrderDto data)
             Customer = customer
         };
 
-        // 5. Add and save everything in one go
         await context.Orders.AddAsync(order);
         await context.SaveChangesAsync();
 

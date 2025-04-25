@@ -198,12 +198,12 @@ public class UserService(DataContext context, IOptions<JWTOptions> options) : IU
         }
     }
 
-    public async Task<ServiceResponse<string>> UpdateUserInformation(string name, string phone, string email)
+    public async Task<ServiceResponse<string>> UpdateUserInformation(GetUserDto user)
     {
         try
         {
-            var user = await context.Users.Where(x => x.Email == email).FirstOrDefaultAsync();
-            if (user == null)
+            var result = await context.Users.Where(x => x.Email == user.email).FirstOrDefaultAsync();
+            if (result == null)
             {
                 return new ServiceResponse<string>()
                 {
@@ -211,11 +211,11 @@ public class UserService(DataContext context, IOptions<JWTOptions> options) : IU
                     isSuccess = false
                 };
             }
-            user.FullName = name;
-            user.PhoneNumber = phone;
-            user.Email = email;
+            result.FullName = user.name;
+            result.PhoneNumber = user.phone;
+            result.Email = user.email;
             
-            context.Update(user);
+            context.Update(result);
             await context.SaveChangesAsync();
 
             return new ServiceResponse<string>()
@@ -249,9 +249,10 @@ public class UserService(DataContext context, IOptions<JWTOptions> options) : IU
             {
                 Data = new GetUserDto()
                 {
-                    FullName = user.FullName,
-                    Email = user.Email,
-                    PhoneNumber = user.PhoneNumber,
+                    name = user.FullName,
+                    email = user.Email,
+                    phone = user.PhoneNumber,
+                    id = user.ID.ToString(),
                 },
                 Message = "User retrieved successfully.",
                 isSuccess = true

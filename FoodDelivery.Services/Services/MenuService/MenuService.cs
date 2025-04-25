@@ -17,7 +17,7 @@ public class MenuService(DataContext context, IHttpContextAccessor httpContextAc
         var data = result.Select(x => new GetMenuDto()
         {
             ID = x.ID,
-            ImagesOfTheFood = x.ImagesOfTheFood.Split(',').Select(addServerURL).ToList(),
+            ImagesOfTheFood = x.ImagesOfTheFood.Split(',').Select(AddServerUrl).ToList(),
             Price = x.Price,
             Description = x.Description,
             FoodName = x.FoodName,
@@ -167,14 +167,14 @@ public class MenuService(DataContext context, IHttpContextAccessor httpContextAc
         }
     }
 
-    private string addServerURL(string path)
+    private string AddServerUrl(string path)
     {
         var request = httpContextAccessor.HttpContext?.Request;
 
         if (request == null)
             return path;
-        var myURL = "/api/files/get?filePath=";
-        var baseUrl = $"{request.Scheme}://{request.Host}{request.PathBase}{myURL}{path}";
+        var myUrl = "/api/files/get?filePath=";
+        var baseUrl = $"{request.Scheme}://{request.Host}{request.PathBase}{myUrl}{path}";
         return baseUrl;    
     }
 }

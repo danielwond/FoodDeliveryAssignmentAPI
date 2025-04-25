@@ -43,13 +43,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 
     //Added swagger support
-    app.UsePathBase("/swagger/index.html");
+    //app.UsePathBase("/swagger/index.html");
 }
 
 //app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");
-
 
 app.UseAuthorization();
 

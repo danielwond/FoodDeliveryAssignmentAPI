@@ -49,4 +49,18 @@ public class UserController(IUserService userService) : ControllerBase
         var result = await userService.ChangeDriverStatus(driverId);
         return result.isSuccess ? Ok(result) : StatusCode(StatusCodes.Status500InternalServerError, result);
     }
+
+    [HttpGet("get")]
+    public async Task<IActionResult> GetUser(Guid id)
+    {
+        var result = await userService.GetUserInfo(id);
+        return result.isSuccess ? Ok(result) : StatusCode(StatusCodes.Status500InternalServerError, result);
+    }
+
+    [HttpPut("update")]
+    public async Task<IActionResult> UpdateUser(GetUserDto user)
+    {
+        var result = await userService.UpdateUserInformation(user);
+        return result.isSuccess ? Ok(result) : StatusCode(StatusCodes.Status500InternalServerError, result);
+    }
 }
